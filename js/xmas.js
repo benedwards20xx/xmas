@@ -31,6 +31,15 @@ var scoreText = canvas.display.text({
     fill: "#f00"
 });
 
+var santaPos = canvas.display.text({
+    x: 5,
+    y: 5,
+    origin : { x: "left", y: "top" },
+    font: "bold 20px sans-serif",
+    text: "x=" + santa.x + ",y=" + santa.y,
+    fill: "#f00"
+});
+
 var present = canvas.display.image({
     image: "img/present.png",
     width: 30,
@@ -43,12 +52,12 @@ var presentsOnScreen = 1;
 canvas.bind("click", function() {
     if (presents.length < presentsOnScreen) {
         var newPresent = present.clone({
-            x: canvas.mouse.x - santa.width / 2,
-            y: canvas.mouse.y + santa.height
+            x: santa.x - santa.width / 2,
+            y: santa.y + santa.height
         });
         presents.push(newPresent);
         canvas.addChild(newPresent);
-        scoreInc = canvas.height - canvas.mouse.y - chimney.height;
+        scoreInc = canvas.height - santa.y - chimney.height;
         scoreInc *= Math.floor(scoreInc / 100);
         console.log(scoreInc);
         console.log(Math.floor(scoreInc / 100));
@@ -56,11 +65,13 @@ canvas.bind("click", function() {
 });
 
 canvas.addChild(scoreText);
+canvas.addChild(santaPos);
 canvas.addChild(santa);
 canvas.addChild(chimney);
 canvas.setLoop(function () {
     santa.x = canvas.mouse.x;
-    santa.y = canvas.mouse.y;
+    santa.y = Math.min(canvas.mouse.y, canvas.height * .5);
+    santaPos.text = "x=" + santa.x + ",y=" + santa.y;
 
     if (chimney.x > -chimney.width) {
         chimney.x--;
@@ -75,6 +86,7 @@ canvas.setLoop(function () {
             } else {
                 canvas.removeChild(presents[i]);
                 presents.splice(i,i+1);
+                continue;
             }
 
             if ((presents[i].x >= chimney.x 
