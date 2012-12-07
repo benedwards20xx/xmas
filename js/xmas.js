@@ -41,7 +41,6 @@ var startText = canvas.display.text({
     fill: "#009900"
 });
 
-
 var endText = canvas.display.text({
     x: canvas.width / 2,
     y: canvas.height / 2,
@@ -54,7 +53,9 @@ var endText = canvas.display.text({
 var present = canvas.display.image({
     image: "img/present.png",
     width: 30,
-    height: 30
+    height: 30,
+    origin: { x: "center", y: "center" },
+    rotatingDirection: 0
 });
 
 var duration = 30;
@@ -110,14 +111,14 @@ canvas.bind("click", function() {
             if (presents.length < presentsOnScreen) {
                 var newPresent = present.clone({
                     x: santa.x - santa.width / 2,
-                    y: santa.y + santa.height
+                    y: santa.y + santa.height,
+                    rotatingDirection: Math.round(Math.random() * 6) - 3
                 });
+                console.log(newPresent.rotatingDirection);
                 presents.push(newPresent);
                 gameScene.add(newPresent);
                 scoreInc = canvas.height - santa.y - chimney.height;
                 scoreInc *= Math.floor(scoreInc / 100);
-                console.log(scoreInc);
-                console.log(Math.floor(scoreInc / 100));
             }
             break;
     }
@@ -137,6 +138,7 @@ canvas.setLoop(function () {
         for (var i = 0; i < presents.length; i++) {
             if (presents[i].y <= canvas.height) {
                 presents[i].y+=2;    
+                presents[i].rotation+=presents[i].rotatingDirection;
             } else {
                 gameScene.remove(presents[i]);
                 presents.splice(i,i+1);
