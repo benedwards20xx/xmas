@@ -1,3 +1,5 @@
 #canvas {
     border: 1px solid red;
+    /*margin: 20px, 20px, 20px, 20px;*/
+    float: left;
 }
