@@ -5,11 +5,11 @@ var canvas = oCanvas.create({
     fps: 60
 });
 
-var santa = canvas.display.arc({
-    radius: 40,
-    start: 0,
-    end: 360,
-    fill: "red"
+var santa = canvas.display.image({
+    image: "img/santa.png",
+    width: 40,
+    height: 40,
+    origin: { x: "center", y: "center" }
 });
 
 var chimney = canvas.display.image({
