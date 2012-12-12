@@ -6,18 +6,28 @@ var canvas = oCanvas.create({
 });
 
 var santa = canvas.display.image({
-    image: "img/santa.png",
-    width: 40,
-    height: 40,
+    image: "img/santaman.png",
+    width: 60,
+    height: 80,
     origin: { x: "center", y: "center" }
+});
+
+var house = canvas.display.image({
+    image: "img/roof.png",
+    origin: { x: "left", y: "bottom" },
+    width: 300,
+    height: 100,
+    x: canvas.width,
+    y: canvas.height
 });
 
 var chimney = canvas.display.image({
     image: "img/chimney1.png",
+    origin: { x: "left", y: "bottom" },
     width: 60,
     height: 200,
-    x: canvas.width - this.width,
-    y: canvas.height - this.height,
+    x: house.x + house.width,
+    y: canvas.height,
 });
 
 var score = 0;
@@ -69,11 +79,18 @@ var durationText = canvas.display.text({
 });
 var interval;
 
+var snowflake = canvas.display.rectangle({
+    width: 1,
+    height: 1,
+    fill: "#fff"
+});
+var snowflakes = new Array();
+
 canvas.scenes.create("start", function() {
     this.add(startText);
 });
 var gameScene = canvas.scenes.create("game", function() {
-    this.add(scoreText).add(durationText).add(santa).add(chimney);
+    this.add(scoreText).add(durationText).add(santa).add(house).add(chimney);
 });
 canvas.scenes.create("end", function() {
     this.add(endText);
@@ -114,9 +131,14 @@ canvas.bind("click", function() {
                     y: santa.y + santa.height,
                     rotatingDirection: Math.round(Math.random() * 6) - 3
                 });
-                console.log(newPresent.rotatingDirection);
+                //console.log(newPresent.rotatingDirection);
                 presents.push(newPresent);
+                gameScene.remove(chimney);
                 gameScene.add(newPresent);
+                // newPresent.fadeIn("long", "ease-in-out-cubic", function () {
+                //     canvas.redraw();
+                // });
+                gameScene.add(chimney);
                 scoreInc = canvas.height - santa.y - chimney.height;
                 scoreInc *= Math.floor(scoreInc / 100);
             }
@@ -128,10 +150,16 @@ canvas.setLoop(function () {
     santa.x = canvas.mouse.x;
     santa.y = Math.min(canvas.mouse.y, canvas.height * .5);
 
-    if (chimney.x > -chimney.width) {
-        chimney.x--;
+    if (house.x > -house.width) {
+        house.x-=2;
     } else {
-        chimney.moveTo(canvas.width - chimney.width, canvas.height - chimney.height);
+        house.moveTo(canvas.width, canvas.height);
+    }
+    
+    if (chimney.x > -chimney.width) {
+        chimney.x-=2;
+    } else {
+        chimney.moveTo(house.x + house.width, canvas.height);
     }
 
     if (presents.length > 0) {
@@ -155,6 +183,50 @@ canvas.setLoop(function () {
             }
         }
     }
+
+    switch (canvas.scenes.current) {
+        case "game":
+        // var randomSnowX = Math.round(Math.random() * canvas.width * 2);
+        // if (randomSnowX % 10 === 0) {
+        //     //console.log(randomSnowX);
+        //     var newSnowflake = snowflake.clone({
+        //         x: randomSnowX,
+        //         y: 0
+        //     });
+        //     gameScene.add(newSnowflake);
+        //     // snowflakes.push(newSnowflake);
+        //     newSnowflake.animate({
+        //         x: newSnowflake.x - canvas.width,
+        //         y: canvas.height
+        //     }, {
+        //         duration: "long",
+        //         callback: moveTo(newSnowflake.x - canvas.width, canvas.height)
+        //     });
+        //     // gameScene.remove(newSnowflake);
+        //     newSnowflake.destroy();
+        // }
+        break;
+    }
+
+    // for (var i = 0; i < snowflakes.length; i++) {
+    //     snowflakes[i].x--;
+    //     snowflakes[i].y++;
+    //     if (snowflakes[i].x < 0) {
+    //         gameScene.remove(snowflakes[i]);
+    //         snowflakes.splice(i,i+1);
+    //         console.log('a');
+    //     }
+        // if (snowflakes[i].x > 0 || snowflakes[i].y < canvas.height) {
+        //     snowflakes[i].x--;
+        //     snowflakes[i].y++;
+        //     console.log('b');
+        // } else {
+        //     gameScene.remove(snowflakes[i]);
+        //     snowflakes.splice(i,i+1);
+        //     console.log('a');
+        // }
+    // }
+
     scoreText.text = score;
 });
 
